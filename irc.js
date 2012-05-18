@@ -121,12 +121,24 @@ irc.prototype.onMessage = function(msg) {
 			var channel = msg.arguments[0].toLowerCase();
 			console.log('<-- [' + command + '] ' + nick + ' joined ' + channel);
 			this.channels[channel].userJoin(nick);
+
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onJoin === 'function') {
+					plugin.onJoin(channel, nick);
+				}
+			});
 			break;
 		case (command === 'KICK'):
 			var channel = msg.arguments[0].toLowerCase()
 			  , user = msg.arguments[1].toLowerCase();
 			console.log('<-- [' + command + '] ' + nick + ' kicked ' + user + ' from ' + channel);
 			this.channels[channel].userKick(user);
+			
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onKick === 'function') {
+					plugin.onKick(channel, nick, user);
+				}
+			});
 			break;
 		case (command === 'MODE'):
 			break;
@@ -136,18 +148,32 @@ irc.prototype.onMessage = function(msg) {
 			for (channel in this.channels) {
 				this.channels[channel].userNickChange(nick, newNick);
 			}
+
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onNick === 'function') {
+					plugin.onNick(nick, newNick);
+				}
+			});
 			break;
 		case (command === 'PART'):
 			var channel = msg.arguments[0].toLowerCase();
 			console.log('<-- [' + command + '] ' + nick + ' left ' + channel);
 			this.channels[channel].userPart(nick);
+
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onPart === 'function') {
+					plugin.onPart(channel, nick);
+				}
+			});
+
 			break;
 		case (command === 'PING'):
 			console.log('<-- [' + command + '] ' + msg.arguments[0]);
 			this.raw('PONG', msg.arguments);
 			break;
 		case (command === 'PRIVMSG'):
-			var message = msg.arguments[1];
+			var channel = msg.arguments[0]
+			  , message = msg.arguments[1];
 			console.log('<-- [' + command + '] <' + nick + '> ' + message);
 			if (message.substring(0,1) == this.triggerPrefix) { // Check for a trigger event
 				var trigger = message.split(' ')[0].substring(1, message.length);
@@ -157,12 +183,24 @@ irc.prototype.onMessage = function(msg) {
 					});
 				}
 			}
+
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onMessage === 'function') {
+					plugin.onMessage(channel, nick, message);
+				}
+			});
 			break;
 		case (command === 'QUIT'):
 			console.log('<-- [' + command + '] ' + nick);
 			for (channel in this.channels) {
 				this.channels[channel].userQuit(nick);
 			}
+			
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onQuit === 'function') {
+					plugin.onQuit(nick);
+				}
+			});
 			break;
 		default:
 			console.log('<-- [' + command + '] (not implemented) <' + msg.prefix + '> ' + msg.arguments);
