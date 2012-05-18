@@ -22,6 +22,7 @@ Plugin.prototype.mom = function(msg) {
 	  , message = msg.arguments[1]
 	  , params = message.split(' ')
 	  , target = params[1].toLowerCase()
+	  , num = parseInt(params[2])
 	  , jokes = [
 		"your mom is so fat the recursive function calculating her mass causes a stack overflow",
 		"Your mom is so fat she's on both sides of the family.",
@@ -40,14 +41,19 @@ Plugin.prototype.mom = function(msg) {
 		"Hindus take one look at your mom and get Sikh",
 		"Yo momma so ugly just after she was born, her mother said, \"What a treasure!\" and her father said, \"Yea, let's go bury it!\"",
 		"Yo momma so ugly she gets 364 extra days to dress up for Halloween.",
+		"Yo momma is like a vacuum cleaner.  She sucks, blows, and gets laid in the closet.",
 	];
 	
 	if(jokes.length > 0){
 		if (this.irc.botNick.toLowerCase() == target) {
 			channel.send(nick + ", I'm not going to insult my own mother.");
 		} else if (userList.indexOf(target) > -1) {
-			var random = Math.floor(Math.random()*(jokes.length - 1));
-			channel.send(target + ', ' + jokes[random]);
+			if (num > 0 && num <= jokes.length) {
+				num = num - 1;
+			} else {
+				num = Math.floor(Math.random()*(jokes.length - 1));
+			}
+			channel.send(target + ', ' + jokes[num]);
 		} else {
 			channel.send(nick + ', ' + target + " isn't here. That's a low blow...");
 		}
