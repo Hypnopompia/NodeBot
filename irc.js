@@ -22,6 +22,7 @@ sys.inherits(irc, process.EventEmitter);
 irc.prototype.init = function(config) {
 	var that = this;
 
+	this.config = config;
 	this.host = config.host || '127.0.0.1';
 	this.port = config.port || 6667;
 	this.botNick = config.botNick || 'NodeBot';
@@ -115,6 +116,12 @@ irc.prototype.onMessage = function(msg) {
 			var that = this;
 			that.joinChannels.forEach(function(name){ // Join all the channels in the config
 				that.channels[name] = new Channel(that, name);
+			});
+
+			this.plugins.forEach(function(plugin){
+				if (typeof plugin.onReady === 'function') {
+					plugin.onReady();
+				}
 			});
 			break;
 		case (command === 'JOIN'):
