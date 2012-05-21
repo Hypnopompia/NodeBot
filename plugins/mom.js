@@ -16,12 +16,17 @@ Plugin = exports.Plugin = function(irc) {
 
 Plugin.prototype.mom = function(msg) {
 	var channelName = msg.arguments[0]
-	  , channel = this.irc.channels[channelName]
-	  , userList = channel.users // List of all the users in the current channel
+	  , channel = this.irc.channels[channelName] || false;
+
+	if (!channel) {
+		return;
+	}
+
+	var userList = channel.users // List of all the users in the current channel
 	  , nick = this.irc.parseNick(msg.prefix) // Nick of the user who triggered this callback
 	  , message = msg.arguments[1]
 	  , params = message.split(' ')
-	  , target = params[1].toLowerCase()
+	  , target = params.length > 2 ? params[1].toLowerCase() : false
 	  , num = parseInt(params[2])
 	  , jokes = [
 		"your mom is so fat the recursive function calculating her mass causes a stack overflow",
@@ -44,7 +49,7 @@ Plugin.prototype.mom = function(msg) {
 		"Yo momma is like a vacuum cleaner.  She sucks, blows, and gets laid in the closet.",
 	];
 	
-	if(jokes.length > 0){
+	if(target && jokes.length > 0){
 		if (this.irc.botNick.toLowerCase() == target) {
 			channel.send(nick + ", I'm not going to insult my own mother.");
 		} else if (userList.indexOf(target) > -1) {

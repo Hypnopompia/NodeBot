@@ -175,7 +175,7 @@ irc.prototype.onMessage = function(msg) {
 
 			break;
 		case (command === 'PING'):
-			console.log('<-- [' + command + '] ' + msg.arguments[0]);
+			// console.log('<-- [' + command + '] ' + msg.arguments[0]);
 			this.raw('PONG', msg.arguments);
 			break;
 		case (command === 'PRIVMSG'):
@@ -234,7 +234,9 @@ irc.prototype.raw = function(cmd) {
 	}
 
 	var msg = Array.prototype.slice.call(arguments, 1).join(' ') + "\r\n";
-	console.log('--> [' + cmd + '] ' + msg.trim());
+	if (cmd !== 'PONG') {
+		console.log('--> [' + cmd + '] ' + msg.trim());
+	}
 	this.conn.write(cmd + ' ' + msg, this.encoding);
 };
 

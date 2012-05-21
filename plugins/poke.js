@@ -15,8 +15,13 @@ Plugin = exports.Plugin = function(irc) {
 
 Plugin.prototype.poke = function(msg) {
 	var channelName = msg.arguments[0]
-	  , channel = this.irc.channels[channelName]
-	  , userList = channel.users // List of all the users in the current channel
+	  , channel = this.irc.channels[channelName] || false;
+
+	if (!channel) {
+		return;
+	}
+
+	var userList = channel.users // List of all the users in the current channel
 	  , nick = this.irc.parseNick(msg.prefix) // Nick of the user who triggered this callback
 	  , message = msg.arguments[1]
 	  , nicks = [];
