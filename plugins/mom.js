@@ -37,7 +37,7 @@ Plugin = exports.Plugin = function(irc) {
 };
 
 Plugin.prototype.mom = function(msg) {
-	var channelName = msg.arguments[0]
+	var channelName = msg.arguments[0].toLowerCase()
 	  , channel = this.irc.channels[channelName] || false;
 
 	if (!channel) {
@@ -70,7 +70,7 @@ Plugin.prototype.mom = function(msg) {
 };
 
 Plugin.prototype.momkov = function(msg) {
-	var channelName = msg.arguments[0]
+	var channelName = msg.arguments[0].toLowerCase()
 	  , channel = this.irc.channels[channelName] || false;
 
 	if (!channel) {

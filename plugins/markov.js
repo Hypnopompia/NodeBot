@@ -18,7 +18,7 @@ Plugin = exports.Plugin = function(irc) {
 
 Plugin.prototype.markov = function(msg) {
 	var that = this
-	  , channelName = msg.arguments[0]
+	  , channelName = msg.arguments[0].toLowerCase()
 	  , channel = this.irc.channels[channelName] || false;
 
 	if (!channel) {
@@ -39,13 +39,23 @@ Plugin.prototype.markov = function(msg) {
 
 Plugin.prototype.onMessage = function(channelName, nick, message) {
 	var that = this
-	  , channel = this.irc.channels[channelName] || false;
+	  , channel = this.irc.channels[channelName] || false
+	  , botNick = this.irc.botNick.toLowerCase();
 	
+	if (message.toLowerCase().indexOf(botNick) == 0) {
+		if (channel) {
+			fs.readFile(channelName + '.log', 'utf8', function(err, text){
+				channel.send(that.getMarkov(text));
+			});
+		}
+		return;
+	}
+
 	if (message.length > 10 && message.substring(0,1) != this.irc.triggerPrefix) {
 		var log = fs.createWriteStream(channelName + '.log', {'flags': 'a'});
 		log.end(message + "\n");
 	}
-	
+
 	if (this.chanCount[channelName]) {
 		this.chanCount[channelName] += 1;
 		
@@ -57,7 +67,6 @@ Plugin.prototype.onMessage = function(channelName, nick, message) {
 				});
 			}
 		}
-		
 	} else {
 		this.chanCount[channelName] = 1;
 	}

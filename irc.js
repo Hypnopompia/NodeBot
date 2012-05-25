@@ -179,7 +179,7 @@ irc.prototype.onMessage = function(msg) {
 			this.raw('PONG', msg.arguments);
 			break;
 		case (command === 'PRIVMSG'):
-			var channel = msg.arguments[0]
+			var channel = msg.arguments[0].toLowerCase()
 			  , message = msg.arguments[1];
 			console.log('<-- [' + command + '] <' + nick + '> ' + message);
 			if (message.substring(0,1) == this.triggerPrefix) { // Check for a trigger event
@@ -259,7 +259,7 @@ irc.prototype.on = function(ev, f) {
 
 irc.prototype.parseNames = function(msg) {
 	var irc = this
-	  , chan = msg.arguments[2]
+	  , chan = msg.arguments[2].toLowerCase()
 	  , nickList = msg.arguments[3].replace(/\+|@/g, '').split(' ');
 
 	nickList.forEach(function(nick){
