@@ -48,10 +48,9 @@ Plugin.prototype.onMessage = function(channelName, nick, message) {
 				channel.send(that.getMarkov(text));
 			});
 		}
-		return;
 	}
 
-	if (message.length > 10 && message.substring(0,1) != this.irc.triggerPrefix) {
+	if (message.length > 5 && message.substring(0,1) != this.irc.triggerPrefix) {
 		var log = fs.createWriteStream(channelName + '.log', {'flags': 'a'});
 		log.end(message + "\n");
 	}
