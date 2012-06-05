@@ -19,7 +19,8 @@ Plugin = exports.Plugin = function(irc) {
 Plugin.prototype.markov = function(msg) {
 	var that = this
 	  , channelName = msg.arguments[0].toLowerCase()
-	  , channel = this.irc.channels[channelName] || false;
+	  , channel = this.irc.channels[channelName] || false
+	  , botNick = this.irc.botNick.toLowerCase();
 
 	if (!channel) {
 		return;
@@ -32,6 +33,7 @@ Plugin.prototype.markov = function(msg) {
 	
 	// channel.send('Hey ' + nicks.sort().join(', ') + '!');
 	fs.readFile(channelName + '.log', 'utf8', function(err, text){
+		text = text.replace(new RegExp(botNick,'ig'), nick);
 		channel.send(that.getMarkov(text));
 	});
 	
@@ -45,6 +47,7 @@ Plugin.prototype.onMessage = function(channelName, nick, message) {
 	if (message.toLowerCase().indexOf(botNick) == 0) {
 		if (channel) {
 			fs.readFile(channelName + '.log', 'utf8', function(err, text){
+				text = text.replace(new RegExp(botNick,'ig'), nick);
 				channel.send(that.getMarkov(text));
 			});
 		}
@@ -62,6 +65,7 @@ Plugin.prototype.onMessage = function(channelName, nick, message) {
 			this.chanCount[channelName] = 0;
 			if (channel) {
 				fs.readFile(channelName + '.log', 'utf8', function(err, text){
+					text = text.replace(new RegExp(botNick,'ig'), nick);
 					channel.send(that.getMarkov(text));
 				});
 			}
